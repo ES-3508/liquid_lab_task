@@ -1,10 +1,17 @@
 from fastapi import HTTPException
 from clients.api import get
 import httpx
+from database.db import StockDatabase
 
 
 
 async def stock_summary(symbol: str, year: int) -> dict:
+    db = StockDatabase()
+
+    # Check if data is already in the database
+    summary = db.get_annual_summary(symbol, year)
+    if summary:
+        return summary
 
     # Fetch data from API
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey=demo"
@@ -15,6 +22,17 @@ async def stock_summary(symbol: str, year: int) -> dict:
         
         # Calculate summary for the year
         summary = calculate_yearly_summary(data, symbol, year)
+        if summary:
+            # Store the summary in the database
+            db.store_annual_record(
+                {
+                    "symbol": symbol,
+                    "year": year,
+                    "high": summary["high"],
+                    "low": summary["low"],
+                    "volume": summary["volume"]
+                }
+            )
 
         return summary
     
@@ -65,8 +83,6 @@ def calculate_yearly_summary(data: dict, symbol: str, year: int) -> dict:
         )
 
     return {
-        "symbol": symbol,
-        "year": year,
         "high": None if high == float("-inf") else high,
         "low": None if low == float("inf") else low,
         "volume": volume
