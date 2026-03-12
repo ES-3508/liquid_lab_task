@@ -1,0 +1,80 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+# Usually these files are in the distribution/packaging patterns above
+# (bin/* or build/* directories)
+# but for completeness sake (can be located anywhere)
+*.manifest
+*.spec
+pyinstaller-hooks/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+pytest.ini # you may or may not want to ignore this, depending on project preferences
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# FastAPI, Flask, etc.
+.env # environment variables should not be committed for security
+venv/ # virtual environments are machine specific and not needed in version control
+env/
+
+# Editors and IDEs
+.vscode/ # VS Code workspace files
+.idea/ # PyCharm files
+
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Ruff
+.ruff_cache
