@@ -1,10 +1,18 @@
 import sqlite3
-import os
+from settings import settings
 
-class StockDatabase:
-    def __init__(self, db_name: str = "stocks.db"):
-        self.db_name = db_name
-        self._init_db()
+class Database:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        if not hasattr(self, 'db_name'):
+            self.db_name = settings.db
+            self._init_db()
 
     def get_connection(self):
         """Returns a connection with Row factory for dict-like access."""

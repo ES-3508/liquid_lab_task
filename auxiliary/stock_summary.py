@@ -1,12 +1,14 @@
 from fastapi import HTTPException
 from clients.api import get
 import httpx
-from database.db import StockDatabase
+from database.db import Database
+from settings import settings
 
+from models.alpha_response import AlphavantageResponse
 
 
 async def stock_summary(symbol: str, year: int) -> dict:
-    db = StockDatabase()
+    db = Database()
 
     # Check if data is already in the database
     summary = db.get_annual_summary(symbol, year)
@@ -14,12 +16,19 @@ async def stock_summary(symbol: str, year: int) -> dict:
         return summary
 
     # Fetch data from API
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey=demo"
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey={settings.alphavantage_api_key}"
     try:
         response = await get(url)
         response.raise_for_status()
         data = response.json()
-        
+
+        # Validate API response structure using pydantic
+        try:
+            AlphavantageResponse(**data)
+        except Exception as e:
+            # if the structure was unexpected, propagate as HTTPException
+            raise HTTPException(status_code=400, detail=f"{response.json()}")
+
         # Calculate summary for the year
         summary = calculate_yearly_summary(data, symbol, year)
         if summary:
