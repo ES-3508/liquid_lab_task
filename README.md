@@ -16,79 +16,95 @@ The API exposes an endpoint to retrieve stock summaries, ensuring efficient data
 
 ## Prerequisites
 
+- Docker
+- An Alpha Vantage API key (sign up at [Alpha Vantage](https://www.alphavantage.co/support/#api-key))
+
+## Build and Run with Docker
+
+1. **Build the Docker image**:
+
+   ```
+   docker build -t liquid-labs .
+   ```
+
+2. **Run the container**:
+
+   Set your Alpha Vantage API key as an environment variable:
+
+   ```
+   docker run -p 8000:8000 -e ALPHAVANTAGE_API_KEY=YOUR_API_KEY_HERE -e DB=stocks.db liquid-labs
+   ```
+
+   Replace `YOUR_API_KEY_HERE` with your actual Alpha Vantage API key.
+
+The API will be available at `http://localhost:8000`.
+
+You can find the Swagger documentation at `http://localhost:8000/docs`.
+
+## Development Setup
+
+If you prefer to run the application locally for development:
+
+### Prerequisites
+
 - Python 3.11 or higher
 - Poetry for dependency management
 - An Alpha Vantage API key (sign up at [Alpha Vantage](https://www.alphavantage.co/support/#api-key))
 
-## Setup
+### Setup
+
+1. **Install Poetry** (if not already installed):
+
+   ```
+   pip install poetry
+   ```
+
+.
 
 1. **Clone the repository** (if applicable) or navigate to the project directory.
 
 2. **Install dependencies**:
+
    ```
    poetry install
    ```
 
 3. **Set up environment variables**:
-   Create a `.env` file in the root directory of the project with the following variables:
+   Create a `.env` file in the root directory with the following variables:
+
    ```
    alphavantage_api_key=YOUR_API_KEY_HERE
-   db=stock_data.db
+   db=stocks.db
    ```
-   - Replace `YOUR_API_KEY_HERE` with your actual Alpha Vantage API key.
-   - The `db` variable specifies the path to the SQLite database file. You can change it if needed.
 
-## Running the Application
+   Replace `YOUR_API_KEY_HERE` with your actual Alpha Vantage API key.
 
-### Run the Database
-
-The database is SQLite-based and will be automatically created when the application runs. No separate setup is required for the database.
-
-### Run the API
+### Running the Application
 
 To run the API in development mode with auto-reload:
+
 ```
 poetry run uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-To run the API in production mode:
-```
-poetry run uvicorn main:app --host 0.0.0.0 --port 8000
-```
+The API will be available at `http://127.0.0.1:8000`.
 
-The API will be available at `http://127.0.0.1:8000` (or `http://localhost:8000` in production).
+If you need to run with VSCode debugger, select the Python interpreter from the Poetry virtual environment:
 
-You can find swagger documentation http://127.0.0.1:8000/docs#/
+1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
+2. Select `Python: Select Interpreter`.
+3. Choose the interpreter from the Poetry environment .
 
-### API Endpoints
+## API Endpoints
 
 - `GET /`: Root endpoint returning a hello message.
 - `GET /symbols/{symbol}/annual/{year}`: Get the annual stock summary for a given symbol and year.
 
 Example request:
+
 ```
-GET http://127.0.0.1:8000/symbols/AAPL/annual/2023
+GET http://localhost:8000/symbols/AAPL/annual/2023
 ```
-
-## Building the Application
-
-To build the application package:
-```
-poetry build
-```
-
-This will create a `dist/` directory with the built package.
-
-## Deployment
-
-For deployment, you can use any ASGI server like Uvicorn, Gunicorn with Uvicorn workers, or deploy to cloud platforms like Heroku, AWS, etc.
-
-Example with Gunicorn:
-```
-poetry run gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker
-```
-
-Ensure the `.env` file is properly configured in your deployment environment.
 
 ## Project Structure
 
@@ -99,4 +115,3 @@ Ensure the `.env` file is properly configured in your deployment environment.
 - `clients/api.py`: HTTP client for API requests.
 - `database/db.py`: Database connection and operations.
 - `models/alpha_response.py`: Pydantic models for API responses.
-
